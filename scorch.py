@@ -45,7 +45,7 @@ class Tank(object):
     def draw(self, surface):
         pygame.draw.circle(surface, self.color if self.alive else DEAD_TANK_COLOR,
                            map(int, (self.x, self.y)), 7)
-        if self.active:
+        if self.active and self.alive:
             pygame.draw.line(surface, self.color,
                              map(int, self.rel_pos(10)),
                              map(int, self.rel_pos(10 + self.magnitude)))
