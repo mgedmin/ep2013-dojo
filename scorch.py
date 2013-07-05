@@ -122,7 +122,7 @@ class Game(object):
             if self.message_ttl < 0:
                 self.message = None
                 self.message_ttl = FRAMERATE * 5
-        pygame.draw.line(screen, (255, 255, 255), *self.ground)
+        pygame.draw.polygon(screen, (0, 120, 0), self.ground + [(screen.get_width(), screen.get_height()), (0, screen.get_height())])
         for tank in self.tanks:
             tank.active = tank is self.current_tank
             tank.draw(screen)
@@ -170,7 +170,7 @@ def main():
 
     while True:
         # draw
-        screen.fill((0, 0, 0))
+        screen.fill((0, 0, 64))
         screen.blit(font.render("Red: %d" % scores[RED], True, RED), (10, 10))
         text = font.render("Green: %d" % scores[GREEN], True, GREEN)
         screen.blit(text, (screen.get_width()-10-text.get_width(), 10))
