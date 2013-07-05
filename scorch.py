@@ -4,6 +4,7 @@ import math
 import random
 import pygame
 from pygame.locals import QUIT, KEYDOWN, K_LEFT, K_RIGHT, K_SPACE, K_UP, K_DOWN
+from collections import defaultdict
 
 GRAVITY = 1 # pixels per frame
 TURN_SPEED = 3 # degrees per frame
@@ -128,7 +129,7 @@ class Game(object):
         for bullet in self.bullets:
             bullet.draw(screen)
 
-    def update(self):
+    def update(self, scores):
         live_bullets = []
         for bullet in self.bullets:
             if bullet.y > max(y for x, y in self.ground):
@@ -139,11 +140,14 @@ class Game(object):
                     tank.explode()
                     if bullet.color == tank.color: # aka suicide
                         self.message = self.font.render("YOU LOSE!", True, bullet.color)
+                        scores[tank.color] -= 1
                     else:
                         self.message = self.font.render("YOU WIN!", True, bullet.color)
+                        scores[bullet.color] += 1
                     self.over = True
-                    continue # bullet is gone gone gone
-            live_bullets.append(bullet)
+                    break # bullet is gone gone gone
+            else:
+                live_bullets.append(bullet)
         self.bullets = live_bullets
 
     def shoot(self):
@@ -161,9 +165,15 @@ def main():
 
     game = Game()
 
+    scores = defaultdict(int)
+    font = pygame.font.Font(None, 24)
+
     while True:
         # draw
         screen.fill((0, 0, 0))
+        screen.blit(font.render("Red: %d" % scores[RED], True, RED), (10, 10))
+        text = font.render("Green: %d" % scores[GREEN], True, GREEN)
+        screen.blit(text, (screen.get_width()-10-text.get_width(), 10))
         game.draw(screen)
         pygame.display.flip()
         # process events
@@ -191,7 +201,7 @@ def main():
             if pygame.key.get_pressed()[K_RIGHT]:
                 current_tank.direction -= TURN_SPEED
         # move
-        game.update()
+        game.update(scores)
         if game.over and game.message is None:
             game = Game()
         # wait
